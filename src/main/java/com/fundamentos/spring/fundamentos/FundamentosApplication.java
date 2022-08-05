@@ -4,11 +4,15 @@ import com.fundamentos.spring.fundamentos.bean.MyBean;
 import com.fundamentos.spring.fundamentos.bean.MyBeanWithProperties;
 import com.fundamentos.spring.fundamentos.component.ComponentDependency;
 import com.fundamentos.spring.fundamentos.entity.User;
+import com.fundamentos.spring.fundamentos.pojo.UserPojo;
 import com.fundamentos.spring.fundamentos.repository.UserRepository;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.data.domain.Sort;
 
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -17,16 +21,20 @@ import java.util.List;
 @SpringBootApplication
 public class FundamentosApplication implements CommandLineRunner {
 
+	Log LOGGER = LogFactory.getLog(FundamentosApplication.class);
+
 	private ComponentDependency componentDependency;
 	private MyBean myBean;
 	private MyBeanWithProperties myBeanWithProperties;
 	private UserRepository userRepository;
+	private UserPojo userPojo;
 
-	public FundamentosApplication (@Qualifier("componentTwoImplement")ComponentDependency componentDependency, MyBean myBean, MyBeanWithProperties myBeanWithProperties, UserRepository userRepository) {
+	public FundamentosApplication (@Qualifier("componentTwoImplement")ComponentDependency componentDependency, MyBean myBean, MyBeanWithProperties myBeanWithProperties, UserPojo userPojo, UserRepository userRepository) {
 
 		this.componentDependency = componentDependency;
 		this.myBean = myBean;
 		this.myBeanWithProperties = myBeanWithProperties;
+		this.userPojo = userPojo;
 		this.userRepository = userRepository;
 	}
 
@@ -38,7 +46,17 @@ public class FundamentosApplication implements CommandLineRunner {
 	public void run(String... args) {
 		ejemplosAnteriores();
 		saveDataInDataBase();
+		getInformationJpqlFromUser();
+
 	}
+
+	private void getInformationJpqlFromUser() {
+		LOGGER.info("Usuario con el metodo findByUserEmail" + userRepository.findByUserEmail("user2@mail.com").orElseThrow(() -> new RuntimeException("No se encontro el usuario")));
+
+		userRepository.findAndSort("user", Sort.by("id").descending()).stream().forEach(user -> LOGGER.info("Usuario con metodo sort " + user));
+
+	}
+
 
 	private void saveDataInDataBase () {
 		User user1 = new User ("Jhon", "jhon@mail.com", LocalDate.of(2021, 03,20));
@@ -61,6 +79,8 @@ public class FundamentosApplication implements CommandLineRunner {
 		componentDependency.saludar();
 		myBean.print();
 		System.out.println(myBeanWithProperties.function());
+		System.out.println(userPojo.getEmail() + "-" + userPojo.getPassword());
+		LOGGER.error("Esto es un error del aplicativo");
 
 	}
 }
