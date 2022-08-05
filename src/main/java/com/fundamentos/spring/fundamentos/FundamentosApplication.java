@@ -55,6 +55,9 @@ public class FundamentosApplication implements CommandLineRunner {
 
 		userRepository.findAndSort("user", Sort.by("id").descending()).stream().forEach(user -> LOGGER.info("Usuario con metodo sort " + user));
 
+		userRepository.findByName("Jhon").stream().forEach(user -> LOGGER.info("Usuario con query method "+ user));
+
+		LOGGER.info("Usuario con query method findByEmailAndName" + userRepository.findByEmailAndName("user3@mail.com", "user3").orElseThrow(() -> new RuntimeException("Usuario no encontrado")));
 	}
 
 
