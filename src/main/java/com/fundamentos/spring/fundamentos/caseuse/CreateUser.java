@@ -2,19 +2,17 @@ package com.fundamentos.spring.fundamentos.caseuse;
 
 import com.fundamentos.spring.fundamentos.entity.User;
 import com.fundamentos.spring.fundamentos.service.UserService;
+import org.springframework.stereotype.Component;
 
-import java.util.List;
-
-public class GetUserImplement implements GetUser {
-
+@Component
+public class CreateUser {
     private UserService userService;
 
-    public GetUserImplement(UserService userService) {
+    public CreateUser(UserService userService) {
         this.userService = userService;
     }
 
-    @Override
-    public List<User> getAll() {
-        return userService.getAllUsers();
+    public User save(User newUser) {
+        return userService.save(newUser);
     }
 }
